@@ -1,0 +1,171 @@
+
+@font-face {
+    font-family: orbiter;
+    font-weight: 400;
+    src: url(./TASAOrbiterText-Regular.otf);
+}
+
+@font-face {
+    font-family: orbiter;
+    font-weight: 700;
+    src: url(./TASAOrbiterText-Bold.otf);
+}
+
+@font-face {
+    font-family: orbiter;
+    font-weight: 500;
+    src: url(./TASAOrbiterText-Medium.otf);
+}
+
+@page {
+    font-family: orbiter;
+    margin: 1cm;
+
+}
+
+html {
+    color: #14213d;
+    font-family: orbiter;
+    font-size: 11pt;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+h1 {
+    color: #1a1a1a;
+    font-family: orbiter;
+    font-size: 2.0rem;
+    margin: 0;
+    text-align: center;
+}
+
+
+.contact-container {
+    max-width: 80%;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+.contact-flex {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.contact-flex-item {
+    flex: 1 1 auto;
+    position: relative;
+    text-align: center;
+    line-height: 15px;
+}
+
+.contact-flex-item + .contact-flex-item {
+    border-left: solid 1px black;
+}
+
+.contact-flex-item:first-child {
+    text-align: left;
+}
+.contact-flex-item:last-child {
+    text-align: right;
+}
+
+.experience h2 {
+    color: #0284c7;
+    margin: 0;
+}
+
+.work {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 10px;
+}
+
+.work-left h3 {
+    text-transform: uppercase;
+}
+
+.work-left p {
+    color: #8b8b8b;
+    text-transform: capitalize;
+    font-family: orbiter;
+    font-weight: 600;
+}
+
+.work-right h3 {
+    text-transform: capitalize;
+}
+
+.work-right p {
+    color: #8b8b8b;
+    font-family: orbiter;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.role-list {
+    padding-left: 16px;
+    margin: 5px;
+}
+
+.role-list li{
+    font-size: smaller;
+    margin: 5px;
+}
+
+.project {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 10px;
+    margin-top: -18px;
+}
+.project-description {
+    margin-top: -16px;
+}
+h2 {
+    color: #0284c7;
+
+}
+.projects h2, a {
+  color: #0284c7;
+}
+
+.project-left h3 {
+    text-transform: capitalize;
+}
+
+.project-left p {
+    color: #8b8b8b;
+    text-transform: capitalize;
+    font-family: orbiter;
+    font-size: smaller;
+    font-weight: 400;
+}
+
+.skills-flex {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -28px;
+    padding: 0;
+    line-height: 20px;
+}
+
+.skills-flex h3 {
+    text-transform: uppercase;
+    color: #8b8b8b;
+}
+.skills-flex ul{
+    padding-left: 0px;
+    margin-top: -10px;
+    list-style-type: none;
+
+}

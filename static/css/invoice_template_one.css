@@ -1,0 +1,21 @@
+@font-face {
+    font-family: Pacifico;
+    src: url(../fonts/pacifico.ttf);
+  }
+  @font-face {
+    font-family: Source Sans Pro;
+    font-weight: 400;
+    src: url(../fonts/sourcesanspro-regular.otf);
+  }
+  @font-face {
+    font-family: Source Sans Pro;
+    font-weight: 700;
+    src: url(../fonts/sourcesanspro-bold.otf);
+  }
+
+html {
+  color: #14213d;
+  font-family: Source Sans Pro;
+  font-size: 11pt;
+  /* line-height: 1.6; */
+}
