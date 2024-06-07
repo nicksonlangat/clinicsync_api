@@ -129,7 +129,7 @@ class Plan(BaseModel):
         return f"{self.plan} - {self.user.email}"
 
     def save(self, *args, **kwargs):
-        # self.expiry_date = timezone.now() + timedelta(days=7)
+        self.expiry_date = timezone.now() + timedelta(days=7)
         super().save(*args, **kwargs)
 
     @property

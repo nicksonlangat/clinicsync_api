@@ -5,6 +5,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r"clinics", views.ClinicApi, basename="clinics")
+router.register(r"vendors", views.VendorApi, basename="vendors")
 
 
 urlpatterns = [

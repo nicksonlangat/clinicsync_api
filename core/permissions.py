@@ -9,7 +9,6 @@ class IsOwnerPermission(permissions.BasePermission):
     # message = "User must have an owner role"
 
     def has_permission(self, request, view):
-        return (
-            bool(request.user and request.user.is_authenticated)
-            and request.user.role == "Owner"
+        return bool(request.user and request.user.is_authenticated) and (
+            request.user.role == "Owner" or request.user.role == "Admin"
         )

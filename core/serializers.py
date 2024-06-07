@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
 
-from .models import Clinic
+from .models import Clinic, Vendor
 
 
 class ClinicSerializer(serializers.ModelSerializer):
@@ -16,4 +16,15 @@ class ClinicSerializer(serializers.ModelSerializer):
         representation["members"] = UserSerializer(
             instance.members.all(), many=True
         ).data
+        return representation
+
+
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["created_by"] = UserSerializer(instance.created_by).data
         return representation

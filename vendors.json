@@ -1,0 +1,62 @@
+ [
+    {
+        "name": "MediCare Supplies Ltd",
+        "location": "Nairobi",
+        "email": "contact@medicare.co.ke",
+        "contact_number": "+254 712 345678"
+    },
+    {
+        "name": "HealthPlus Distributors",
+        "location": "Mombasa",
+        "email": "info@healthplus.co.ke",
+        "contact_number": "+254 723 456789"
+    },
+    {
+        "name": "PharmaKen Ltd",
+        "location": "Kisumu",
+        "email": "support@pharmaken.co.ke",
+        "contact_number": "+254 734 567890"
+    },
+    {
+        "name": "Kenya Med Supplies",
+        "location": "Nakuru",
+        "email": "sales@kenyamed.co.ke",
+        "contact_number": "+254 745 678901"
+    },
+    {
+        "name": "Clinic Essentials Ltd",
+        "location": "Eldoret",
+        "email": "orders@clinicessentials.co.ke",
+        "contact_number": "+254 756 789012"
+    },
+    {
+        "name": "Vital Health Supplies",
+        "location": "Thika",
+        "email": "vital@healthsupplies.co.ke",
+        "contact_number": "+254 767 890123"
+    },
+    {
+        "name": "Medico Distributors",
+        "location": "Nyeri",
+        "email": "info@medico.co.ke",
+        "contact_number": "+254 778 901234"
+    },
+    {
+        "name": "Wellness Pharmaceuticals",
+        "location": "Machakos",
+        "email": "contact@wellnesspharma.co.ke",
+        "contact_number": "+254 789 012345"
+    },
+    {
+        "name": "Prime Health Supplies",
+        "location": "Kakamega",
+        "email": "prime@healthsupplies.co.ke",
+        "contact_number": "+254 701 123456"
+    },
+    {
+        "name": "CarePlus Medical Supplies",
+        "location": "Nairobi",
+        "email": "careplus@medicalsupplies.co.ke",
+        "contact_number": "+254 712 234567"
+    }
+]
