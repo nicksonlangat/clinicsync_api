@@ -28,9 +28,6 @@ class ClinicApi(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-    # def get_queryset(self):
-    #     return Client.objects.filter(user=self.request.user)
-
 
 class VendorApi(viewsets.ModelViewSet):
     queryset = Vendor.objects.all()
