@@ -14,4 +14,8 @@ urlpatterns = [
     path("import/products", views.ImportProductsApi.as_view(), name="import-products"),
     path("import/vendors", views.ImportVendorsApi.as_view(), name="import-vendors"),
     path("products/stats", views.ProductStatsApi.as_view(), name="products-stats"),
+    path("export/products", views.ExportProductsApi.as_view(), name="export-products"),
+    path(
+        "serve/products", views.ServeProductsExcelApi.as_view(), name="serve-products"
+    ),
 ] + router.urls

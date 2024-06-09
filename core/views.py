@@ -1,7 +1,10 @@
+import os
 import random
 
 import pandas as pd
+from django.conf import settings
 from django.db.models import F, Q, Sum
+from django.http import FileResponse, HttpResponse
 from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
@@ -118,7 +121,7 @@ class ImportProductsApi(APIView):
                     "created_by": request.user.id,
                     "image_url": row.get("image"),
                     "price": row.get("price").replace(",", ""),
-                    "stock_number": random.randint(5, 200),
+                    "stock_number": random.randint(0, 100),
                     "vendor": random.choice(vendors).id,
                     "category": random.choice(categories).id,
                 }
@@ -160,20 +163,56 @@ class ProductStatsApi(APIView):
                 "total_stock_value": total_product_value,
                 "low_stock_products": {
                     "value": low_stock_products,
-                    "percentage": (low_stock_products / products_count) * 100,
+                    "percentage": f"{(low_stock_products / products_count) * 100}%",
                 },
                 "out_of_stock_products": {
                     "value": out_of_stock_products,
-                    "percentage": (out_of_stock_products / products_count) * 100,
+                    "percentage": f"{(out_of_stock_products / products_count) * 100}%",
                 },
                 "in_stock_products": {
                     "value": products_count
                     - (low_stock_products + out_of_stock_products),
-                    "percentage": (
+                    "percentage": f"""{(
                         (products_count - (low_stock_products + out_of_stock_products))
                         / products_count
                     )
-                    * 100,
+                    * 100}%""",
                 },
             }
+        )
+
+
+class ExportProductsApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        products = Product.objects.all()[:10]
+        # Create a DataFrame
+        data = {
+            "Name": [product.name for product in products],
+            "Stock Number": [product.stock_number for product in products],
+            "Price": [product.price for product in products],
+            "Image URL": [product.image_url for product in products],
+        }
+        df = pd.DataFrame(data)
+
+        # Create a response object
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = "attachment; filename=products.xlsx"
+
+        # Write the DataFrame to the response object
+        df.to_excel(response, index=False, engine="openpyxl")
+
+        return response
+
+
+class ServeProductsExcelApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        file_path = os.path.join(settings.BASE_DIR, "exports/products.xlsx")
+        return FileResponse(
+            open(file_path, "rb"), as_attachment=True, filename="products.xlsx"
         )
