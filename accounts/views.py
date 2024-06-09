@@ -5,6 +5,7 @@ from rest_framework import exceptions, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.serializers import ClinicSerializer
 from shared.email import TemplateEmail
 
 from .models import PasswordResetToken, Plan, User
@@ -96,6 +97,7 @@ class UserMeApi(APIView):
             {
                 "user": UserSerializer(request.user).data,
                 "plan": PlanSerializer(plan).data,
+                "clinics": ClinicSerializer(request.user.clinics.all(), many=True).data,
             },
             status=status.HTTP_200_OK,
         )

@@ -1,14 +1,20 @@
 import random
 
 import pandas as pd
-from rest_framework import status, viewsets
+from django.db.models import F, Q, Sum
+from rest_framework import permissions, status, viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Category, Clinic, Product, Vendor
 from .permissions import IsOwnerPermission
-from .serializers import ClinicSerializer, ProductSerializer, VendorSerializer
+from .serializers import (
+    CategorySerializer,
+    ClinicSerializer,
+    ProductSerializer,
+    VendorSerializer,
+)
 
 
 class ClinicApi(viewsets.ModelViewSet):
@@ -33,6 +39,12 @@ class VendorApi(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Vendor.objects.filter(created_by=self.request.user)
+
+
+class CategoryApi(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ProductApi(viewsets.ModelViewSet):
@@ -106,7 +118,7 @@ class ImportProductsApi(APIView):
                     "created_by": request.user.id,
                     "image_url": row.get("image"),
                     "price": row.get("price").replace(",", ""),
-                    "stock_number": random.randint(5, 800),
+                    "stock_number": random.randint(5, 200),
                     "vendor": random.choice(vendors).id,
                     "category": random.choice(categories).id,
                 }
@@ -127,3 +139,41 @@ class ImportProductsApi(APIView):
             )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductStatsApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        products = Product.objects.filter(created_by=request.user)
+        products_count = products.count()
+        low_stock_products = products.filter(
+            Q(stock_number__lte=20) & Q(stock_number__gt=0)
+        ).count()
+        out_of_stock_products = products.filter(stock_number=0).count()
+        total_product_value = products.aggregate(
+            total=Sum(F("price") * F("stock_number"))
+        )["total"]
+        return Response(
+            {
+                "total_products": products_count,
+                "total_stock_value": total_product_value,
+                "low_stock_products": {
+                    "value": low_stock_products,
+                    "percentage": (low_stock_products / products_count) * 100,
+                },
+                "out_of_stock_products": {
+                    "value": out_of_stock_products,
+                    "percentage": (out_of_stock_products / products_count) * 100,
+                },
+                "in_stock_products": {
+                    "value": products_count
+                    - (low_stock_products + out_of_stock_products),
+                    "percentage": (
+                        (products_count - (low_stock_products + out_of_stock_products))
+                        / products_count
+                    )
+                    * 100,
+                },
+            }
+        )

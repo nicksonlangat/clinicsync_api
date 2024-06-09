@@ -73,7 +73,7 @@ class Product(BaseModel):
     image = models.ImageField(upload_to="products", null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.sku:
+        if not self.sku or self.sku == "":
             self.sku = self.generate_unique_sku()
         super().save(*args, **kwargs)
 
