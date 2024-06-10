@@ -56,7 +56,29 @@ class ProductApi(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
     def get_queryset(self):
-        return Product.objects.filter(created_by=self.request.user)
+        qs = Product.objects.filter(created_by=self.request.user)
+        status = self.request.query_params.get("status", None)
+        stock_number = self.request.query_params.get("stock_number", None)
+        category = self.request.query_params.get("category", None)
+        vendor = self.request.query_params.get("vendor", None)
+        sku = self.request.query_params.get("sku", None)
+
+        if sku:
+            qs = qs.filter(sku=sku)
+        if stock_number:
+            qs = qs.filter(stock_number=stock_number)
+        if category:
+            qs = qs.filter(category=category)
+        if vendor:
+            qs = qs.filter(vendor=vendor)
+        if status:
+            if status == "low_stock":
+                qs = qs.filter(Q(stock_number__lte=20) & Q(stock_number__gt=0))
+            if status == "out_of_stock":
+                qs = qs.filter(stock_number=0)
+            if status == "in_stock":
+                qs = qs.filter(stock_number__gt=20)
+        return qs
 
 
 class ImportVendorsApi(APIView):
