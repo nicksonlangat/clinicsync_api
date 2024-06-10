@@ -157,14 +157,18 @@ class ProductStatsApi(APIView):
         return Response(
             {
                 "total_products": products_count,
-                "total_stock_value": total_product_value,
+                "total_stock_value": total_product_value if total_product_value else 0,
                 "low_stock_products": {
                     "value": low_stock_products,
-                    "percentage": f"{(low_stock_products / products_count) * 100}%",
+                    "percentage": f"{(low_stock_products / products_count) * 100}%"
+                    if products_count
+                    else 0,
                 },
                 "out_of_stock_products": {
                     "value": out_of_stock_products,
-                    "percentage": f"{(out_of_stock_products / products_count) * 100}%",
+                    "percentage": f"{(out_of_stock_products / products_count) * 100}%"
+                    if products_count
+                    else 0,
                 },
                 "in_stock_products": {
                     "value": products_count
@@ -173,7 +177,9 @@ class ProductStatsApi(APIView):
                         (products_count - (low_stock_products + out_of_stock_products))
                         / products_count
                     )
-                    * 100}%""",
+                    * 100}%"""
+                    if products_count
+                    else 0,
                 },
             }
         )
