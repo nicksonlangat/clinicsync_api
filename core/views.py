@@ -10,11 +10,12 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Category, Clinic, Product, Vendor
+from .models import Category, Clinic, Order, Product, Vendor
 from .permissions import IsOwnerPermission
 from .serializers import (
     CategorySerializer,
     ClinicSerializer,
+    OrderSerializer,
     ProductSerializer,
     VendorSerializer,
 )
@@ -41,6 +42,15 @@ class VendorApi(viewsets.ModelViewSet):
         return Vendor.objects.filter(created_by=self.request.user)
 
 
+class OrderApi(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsOwnerPermission]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
 class CategoryApi(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -62,6 +72,7 @@ class ProductApi(viewsets.ModelViewSet):
         category = self.request.query_params.get("category", None)
         vendor = self.request.query_params.get("vendor", None)
         sku = self.request.query_params.get("sku", None)
+        name = self.request.query_params.get("name", None)
 
         if sku:
             qs = qs.filter(sku=sku)
@@ -78,6 +89,10 @@ class ProductApi(viewsets.ModelViewSet):
                 qs = qs.filter(stock_number=0)
             if status == "in_stock":
                 qs = qs.filter(stock_number__gt=20)
+        if name:
+            qs = (
+                qs.filter(name__contains=name.upper()).order_by("name").distinct("name")
+            )
         return qs
 
 
