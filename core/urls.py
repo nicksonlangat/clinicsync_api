@@ -19,4 +19,9 @@ urlpatterns = [
     path(
         "serve/products", views.ServeProductsExcelApi.as_view(), name="serve-products"
     ),
+    path(
+        "orderitems/<int:pk>/",
+        views.OrderItemAPIView.as_view(),
+        name="order-item-detail",
+    ),
 ] + router.urls

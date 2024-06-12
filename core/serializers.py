@@ -4,6 +4,7 @@ from rest_framework import serializers
 from accounts.serializers import UserSerializer
 
 from .models import Category, Clinic, Order, OrderItem, Product, Vendor
+from .utils import send_order_email_to_vendor
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -89,6 +90,38 @@ class OrderSerializer(serializers.ModelSerializer):
         percentage = f"{(received / total) * 100}%" if total else 0
         return percentage
 
+    def update(self, instance, validated_data):
+        new_order_items = [
+            item["product"]
+            for item in validated_data["order_items"]
+            if "is_new" in item
+        ]
+        existing_order_items = [
+            item for item in validated_data["order_items"] if "is_new" not in item
+        ]
+
+        for order_item in new_order_items:
+            OrderItem.objects.create(
+                order=instance,
+                product=Product.objects.get(id=order_item["id"]),
+                quantity=order_item["quantity"],
+                price=order_item["price"],
+            )
+
+        for order_item in existing_order_items:
+            saved_order_item = OrderItem.objects.get(id=order_item["id"])
+            qty = order_item["quantity"]
+            if int(qty) <= 0:
+                saved_order_item.delete()
+            else:
+                saved_order_item.quantity = qty
+                saved_order_item.save()
+
+        instance.notes = validated_data.get("notes", instance.notes)
+        instance.vendor = validated_data.get("vendor", instance.vendor)
+        instance.save()
+        return instance
+
     def create(self, validated_data):
         """
         Create and return a new `Order` instance, given the validated data.
@@ -104,6 +137,10 @@ class OrderSerializer(serializers.ModelSerializer):
                 quantity=order_item["quantity"],
                 price=order_item["price"],
             )
+        email_sent = send_order_email_to_vendor(order, order_items)
+        if email_sent:
+            order.email_sent = True
+            order.save()
         return order
 
     def to_representation(self, instance):

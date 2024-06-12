@@ -10,7 +10,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Category, Clinic, Order, Product, Vendor
+from .models import Category, Clinic, Order, OrderItem, Product, Vendor
 from .permissions import IsOwnerPermission
 from .serializers import (
     CategorySerializer,
@@ -256,3 +256,23 @@ class ServeProductsExcelApi(APIView):
         return FileResponse(
             open(file_path, "rb"), as_attachment=True, filename="products.xlsx"
         )
+
+
+class OrderItemAPIView(APIView):
+    def patch(self, request, pk):
+        # Handle PATCH request
+        instance = OrderItem.objects.get(pk=pk)
+        serializer = OrderItem(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        # Handle DELETE request
+        try:
+            instance = OrderItem.objects.get(pk=pk)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except OrderItem.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
