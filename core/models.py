@@ -2,6 +2,7 @@ import random
 import string
 
 from django.db import models
+from django.db.models import F
 from django.utils.text import slugify
 
 from accounts.models import User
@@ -84,3 +85,63 @@ class Product(BaseModel):
 
     def __str__(self) -> str:
         return str(self.name)
+
+
+class Order(BaseModel):
+    class Status(models.TextChoices):
+        COMPLETE = "Complete"
+        PENDING = "Pending"
+        CANCELLED = "Cancelled"
+
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="orders", null=True, blank=True
+    )
+    vendor = models.ForeignKey(
+        Vendor,
+        on_delete=models.CASCADE,
+        related_name="vendor_orders",
+        null=True,
+        blank=True,
+    )
+    order_number = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    status = models.CharField(
+        max_length=255, choices=Status.choices, default=Status.PENDING
+    )
+    notes = models.TextField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.order_number or self.order_number == "":
+            self.order_number = self.generate_unique_order_number()
+        super().save(*args, **kwargs)
+
+    def generate_unique_order_number(self):
+        prefix = "ORD"
+        suffix = "".join(random.choices(string.digits, k=5))
+        return f"{prefix}-{suffix}"
+
+    def __str__(self) -> str:
+        return str(self.order_number)
+
+
+class OrderItem(BaseModel):
+    class Status(models.TextChoices):
+        RECEIVED = "Received"
+        PENDING = "Pending"
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="product_items"
+    )
+    status = models.CharField(
+        max_length=255, choices=Status.choices, default=Status.PENDING
+    )
+    price = models.DecimalField(max_digits=9, decimal_places=2)
+    quantity = models.IntegerField(default=1)
+    total = models.GeneratedField(
+        expression=F("quantity") * F("price"),
+        output_field=models.FloatField(),
+        db_persist=True,
+    )
+
+    def __str__(self) -> str:
+        return f"{self.order.order_number} - {self.product.name} - {self.total}"

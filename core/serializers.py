@@ -1,8 +1,9 @@
+from django.db.models import Sum
 from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
 
-from .models import Category, Clinic, Product, Vendor
+from .models import Category, Clinic, Order, OrderItem, Product, Vendor
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -55,4 +56,69 @@ class ProductSerializer(serializers.ModelSerializer):
         representation["created_by"] = UserSerializer(instance.created_by).data
         representation["category"] = CategorySerializer(instance.category).data
         representation["vendor"] = VendorSerializer(instance.vendor).data
+        return representation
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_items = serializers.ListField(write_only=True)
+    products = serializers.SerializerMethodField(read_only=True)
+    all_products = serializers.SerializerMethodField(read_only=True)
+    received_products = serializers.SerializerMethodField(read_only=True)
+    order_totals = serializers.SerializerMethodField(read_only=True)
+    reception_percentage = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Order
+        fields = "__all__"
+
+    def get_products(self, obj):
+        return OrderItemSerializer(obj.items.all(), many=True).data
+
+    def get_all_products(self, obj):
+        return obj.items.all().count()
+
+    def get_received_products(self, obj):
+        return obj.items.filter(status="Received").count()
+
+    def get_order_totals(self, obj):
+        return obj.items.all().aggregate(total=Sum("total"))["total"]
+
+    def get_reception_percentage(self, obj):
+        total = obj.items.all().count()
+        received = obj.items.filter(status="Received").count()
+        percentage = f"{(received / total) * 100}%" if total else 0
+        return percentage
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Order` instance, given the validated data.
+        Also create related OrderItem instances.
+        """
+        order_items = validated_data.pop("order_items")
+        order = Order.objects.create(**validated_data)
+
+        for order_item in order_items:
+            OrderItem.objects.create(
+                order=order,
+                product=Product.objects.get(id=order_item["id"]),
+                quantity=order_item["quantity"],
+                price=order_item["price"],
+            )
+        return order
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["created_by"] = UserSerializer(instance.created_by).data
+        representation["vendor"] = VendorSerializer(instance.vendor).data
+        return representation
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["product"] = ProductSerializer(instance.product).data
         return representation
