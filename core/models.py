@@ -108,6 +108,7 @@ class Order(BaseModel):
         max_length=255, choices=Status.choices, default=Status.PENDING
     )
     notes = models.TextField(null=True, blank=True)
+    email_sent = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.order_number or self.order_number == "":

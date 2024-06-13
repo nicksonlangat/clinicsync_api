@@ -10,11 +10,12 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Category, Clinic, Order, Product, Vendor
+from .models import Category, Clinic, Order, OrderItem, Product, Vendor
 from .permissions import IsOwnerPermission
 from .serializers import (
     CategorySerializer,
     ClinicSerializer,
+    OrderItemSerializer,
     OrderSerializer,
     ProductSerializer,
     VendorSerializer,
@@ -256,3 +257,9 @@ class ServeProductsExcelApi(APIView):
         return FileResponse(
             open(file_path, "rb"), as_attachment=True, filename="products.xlsx"
         )
+
+
+class OrderItemApi(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [IsOwnerPermission]
