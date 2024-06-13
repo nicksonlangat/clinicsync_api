@@ -9,6 +9,7 @@ router.register(r"vendors", views.VendorApi, basename="vendors")
 router.register(r"products", views.ProductApi, basename="products")
 router.register(r"categories", views.CategoryApi, basename="categories")
 router.register(r"orders", views.OrderApi, basename="orders")
+router.register(r"orderitems", views.OrderItemApi, basename="orderitems")
 
 
 urlpatterns = [
@@ -18,10 +19,5 @@ urlpatterns = [
     path("export/products", views.ExportProductsApi.as_view(), name="export-products"),
     path(
         "serve/products", views.ServeProductsExcelApi.as_view(), name="serve-products"
-    ),
-    path(
-        "orderitems/<int:pk>/",
-        views.OrderItemAPIView.as_view(),
-        name="order-item-detail",
     ),
 ] + router.urls
