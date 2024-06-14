@@ -35,6 +35,7 @@ class UserRegisterApi(APIView):
             subject="Confirm Your Email",
             template="activate",
             context={"code": code, "user": registered_user},
+            order_pdf=None,
         )
         template.send()
         return Response(
@@ -143,6 +144,7 @@ class UserPasswordResetApi(APIView):
                 subject="Reset Your Password",
                 template="reset",
                 context={"code": code, "user": user},
+                order_pdf=None,
             )
             template.send()
 
@@ -153,6 +155,7 @@ class UserPasswordResetApi(APIView):
                     subject="Confirm Your Email",
                     template="activate",
                     context={"code": code, "user": user},
+                    order_pdf=None,
                 )
                 template.send()
             else:

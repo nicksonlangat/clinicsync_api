@@ -111,8 +111,9 @@ class TemplateEmail:
             reply_to=self.reply_to,
             **email_kwargs,
         )
-        self.django_email.attach("order.pdf", order_pdf, "application/pdf")
         self.django_email.attach_alternative(self.html_content, "text/html")
+        if order_pdf:
+            self.django_email.attach("order.pdf", order_pdf, "application/pdf")
 
     def render_content(self):
         html_content = self.render_html()
