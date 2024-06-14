@@ -6,5 +6,4 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self):
-        # Import signal receiver functions
         pass
