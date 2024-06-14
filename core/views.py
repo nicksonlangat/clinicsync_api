@@ -51,6 +51,20 @@ class OrderApi(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
+    def get_queryset(self):
+        qs = Order.objects.filter(created_by=self.request.user)
+        status = self.request.query_params.get("status", None)
+        order_number = self.request.query_params.get("order_number", None)
+        vendor = self.request.query_params.get("vendor", None)
+
+        if order_number:
+            qs = qs.filter(order_number=order_number)
+        if vendor:
+            qs = qs.filter(vendor=vendor)
+        if status:
+            qs = qs.filter(status=status)
+        return qs
+
 
 class CategoryApi(viewsets.ModelViewSet):
     queryset = Category.objects.all()
