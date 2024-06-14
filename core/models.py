@@ -2,7 +2,7 @@ import random
 import string
 
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Sum
 from django.utils.text import slugify
 
 from accounts.models import User
@@ -119,6 +119,9 @@ class Order(BaseModel):
         prefix = "ORD"
         suffix = "".join(random.choices(string.digits, k=5))
         return f"{prefix}-{suffix}"
+
+    def order_totals(self):
+        return self.items.all().aggregate(total=Sum("total"))["total"]
 
     def __str__(self) -> str:
         return str(self.order_number)
