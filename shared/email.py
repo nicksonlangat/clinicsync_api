@@ -81,6 +81,7 @@ class TemplateEmail:
         context={},
         from_email=None,
         reply_to=None,
+        order_pdf=None,
         **email_kwargs,
     ):
         self.to = to
@@ -91,6 +92,7 @@ class TemplateEmail:
         self.reply_to = reply_to
 
         self.context["template"] = template
+        self.order_pdf = order_pdf
 
         self.html_content, self.plain_content = self.render_content()
 
@@ -109,6 +111,7 @@ class TemplateEmail:
             reply_to=self.reply_to,
             **email_kwargs,
         )
+        self.django_email.attach("order.pdf", order_pdf, "application/pdf")
         self.django_email.attach_alternative(self.html_content, "text/html")
 
     def render_content(self):

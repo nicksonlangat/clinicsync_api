@@ -129,6 +129,7 @@ class OrderSerializer(serializers.ModelSerializer):
         """
         order_items = validated_data.pop("order_items")
         order = Order.objects.create(**validated_data)
+        request = self.context["request"]
 
         for order_item in order_items:
             OrderItem.objects.create(
@@ -137,7 +138,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 quantity=order_item["quantity"],
                 price=order_item["price"],
             )
-        email_sent = send_order_email_to_vendor(order, order_items)
+        email_sent = send_order_email_to_vendor(order, request)
         if email_sent:
             order.email_sent = True
             order.save()

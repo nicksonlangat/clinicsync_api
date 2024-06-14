@@ -27,23 +27,17 @@ center;border-radius:3px 3px 0 0;background-color:#FF9F00;margin:0;padding:20px;
 <!--<![endif]-->
 </td></tr><tr style="vertical-align:middle;" valign="middle"><td align="center">
 <table align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse:collapse;max-width:600px;width:100%;background-color:#fffffe;"><tr style="vertical-align:middle;" valign="middle"><td>
-<table align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse:collapse;max-width:600px;width:100%;"><tr style="vertical-align:middle;" valign="middle"><td class="mso-padding alert alert-warning alert-dark" align="center" bgcolor="#FF9F00" valign="top"><p style="font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;vertical-align:top;color:#fff;font-weight:500;text-align:center;border-radius:3px 3px 0 0;background-color:#026CFF;margin:0;padding:20px;margin-top:0!important;margin-bottom:0!important;">Confirm Your Email.</p>
+<table align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse:collapse;max-width:600px;width:100%;"><tr style="vertical-align:middle;" valign="middle"><td class="mso-padding alert alert-warning alert-dark" align="center" bgcolor="#FF9F00" valign="top"><p style="font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;vertical-align:top;color:#fff;font-weight:500;text-align:center;border-radius:3px 3px 0 0;background-color:#026CFF;margin:0;padding:20px;margin-top:0!important;margin-bottom:0!important;">New Order Alert.</p>
 </td></tr></table>
 </td></tr><tr style="vertical-align:middle;" valign="middle"><td align="center" style="padding:30px;" class="content">
 <table align="center" role="presentation" border="0" cellpadding="0" cellspacing="0"
 width="600" style="border-collapse:collapse;max-width:600px;width:100%;background-color:#fffffe;"><tr style="vertical-align:middle;" valign="middle"><td class="content"><p style="color:#000000;font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;margin-top:0!important;">
-    Hello <strong>{{user.first_name}}</strong></p><p style="color:#000000;font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;margin-bottom:0!important;">Welcome to ClinicSync! Your account has been created and we are delighted to have you onboard. <br> Use the code below to activate your account.</p>
+    Hello <strong>{{order.vendor.name}}</strong></p><p style="color:#000000;font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;margin-bottom:0!important;">{{order.created_by.first_name}} from {{clinic.name}} has placed a new order with you. <br> Please find attached to this email, a PDF with order items.</p>
 </td></tr></table>
 </td></tr><tr style="vertical-align:middle;" valign="middle"><td align="center" class="content">
-<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%"><tr style="vertical-align:middle;" valign="middle"><td align="left" style="padding:0 0 0 30px;" class="content"><div style="font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;font-weight:bold;background:#348eda;text-decoration:none;padding:15px 25px;color:#fff;border-radius:4px;display:inline-block;mso-padding-alt:0;background-color:#026CFF !important;">
-<!--[if mso]><i style="letter-spacing:25px;mso-font-width:-100%;mso-text-raise:30pt" hidden>&nbsp;</i>
-<![endif]--><span style="mso-text-raise:15pt;">{{code}}</span>
-<!--[if mso]><i style="letter-spacing:25px;mso-font-width:-100%" hidden>&nbsp;</i>
-<![endif]--></div>
-</td></tr></table>
 </td></tr><tr style="vertical-align:middle;" valign="middle"><td align="center" style="padding:30px;" class="content">
 <table align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse:collapse;max-width:600px;width:100%;background-color:#fffffe;"><tr style="vertical-align:middle;" valign="middle"><td class="content"><p style="color:#000000;font-size:16px;mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;margin-top:0!important;margin-bottom:0!important;">
-Thanks for choosing ClinicSync</p>
+Thanks for choosing ClinicSync.</p>
 </td></tr></table>
 </td></tr></table>
 <!-- <table align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse:collapse;max-width:600px;width:100%;"><tr style="vertical-align:middle;" valign="middle"><td align="center" style="padding:30px 0;"><p style="mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;font-size:14px;color:#999;margin-top:0!important;margin-bottom:0!important;"><a href="http://twitter.com/mail_gun" style="mso-line-height-rule:exactly;line-height:24px;font-family:Arial,sans-serif;text-decoration:underline;font-weight:bold;font-size:14px;color:#999;">Unsubscribe</a> from these&nbsp;alerts.</p> -->

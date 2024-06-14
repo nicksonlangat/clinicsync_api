@@ -20,4 +20,8 @@ urlpatterns = [
     path(
         "serve/products", views.ServeProductsExcelApi.as_view(), name="serve-products"
     ),
+    path("change/status", views.ChangeOrderStatusApi.as_view(), name="change-status"),
+    path("send/email", views.SendOrderEmailApi.as_view(), name="send-email"),
+    path("test/email", views.TestEmailApi.as_view(), name="email-test"),
+    path("test/pdf", views.TestPdfApi.as_view(), name="email-pdf"),
 ] + router.urls

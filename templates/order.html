@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <main class="p-20">
+            <div style="color: #09354F !important;">
+                <div style="color: #09354F !important; gap: 5px;"
+                    class="text-xl flex gap-1 items-center font-semibold">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        style="height: 2.5rem; width: 2.5rem; color: #09354F !important;">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1 -20 0l.004 -.28c.148 -5.393 4.566 -9.72 9.996 -9.72m2 5a1 1 0 0 0 -1 1v2.999h-2v-2.999a1 1 0 0 0 -.883 -.993l-.117 -.007a1 1 0 0 0 -1 1v8a1 1 0 0 0 2 0v-3.001h2v3.001a1 1 0 0 0 .883 .993l.117 .007a1 1 0 0 0 1 -1v-8a1 1 0 0 0 -1 -1" />
+                    </svg>
+                    <p style="width: 5px;"></p>
+                    <p>ClinicSync</p></
+                    >
+                </div>
+                <div class="mt-5">
+                    <p class="text-xl uppercase text-gray-500">orders/
+                        #{{order.order_number}}</p>
+
+                </div>
+                <div class="mt-5 flex justify-between border-b py-5">
+                    <div>
+                        <p class="text-xs uppercase text-gray-400">order
+                            number</p>
+                        <div class="mt-2 uppercase text-sm text-gray-600">
+                            <p>#{{order.order_number}}</p>
+
+                        </div>
+                        <p class="text-xs mt-2 uppercase text-gray-400">date</p>
+                        <div class="mt-2 uppercase text-sm text-gray-600">
+                            <p>{{order.created_at}}</p>
+
+                        </div>
+
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase text-gray-400">clinic</p>
+                        <div class="mt-2 text-sm text-gray-600">
+                            <p>{{clinic.name}}</p>
+                            <p>{{clinic.clinic_phone_number}}</p>
+                            <p>{{clinic.clinic_email}}</p>
+                            <p>{{clinic.location}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase text-gray-400">supplier</p>
+                        <div class="mt-2 text-sm text-gray-600">
+
+                            <div class="mt-2 text-sm text-gray-600">
+                                <p>{{order.vendor.name}}</p>
+                                <p>{{order.vendor.phone_number}}</p>
+                                <p>{{order.vendor.email}}</p>
+                                <p>{{order.vendor.location}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 border-b py-5">
+                    <p class="text-xl uppercase text-gray-500">order summary</p>
+                    {% for item in items %}
+                    <div class="mt-5 flex text-gray-700">
+                        <div class="bg-gray-100 rounded-md">
+                            <div class="bg-gray-50">
+                                <div class="p-2">
+                                    <img
+                                        class="h-12 w-12 rounded-md object-cover"
+                                        src="{{item.product.image_url}}" alt />
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width: 25%;">
+
+                        </div>
+                        <div style="width: 50%;">
+                            <p>{{item.product.name}}
+                                <br>
+                                x{{item.quantity}}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p>KSH {{item.total}}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-5 flex justify-between">
+                    <div></div>
+                    <div></div>
+                    <div class>
+                        <p>ORDER TOTAL</p>
+                        <p>KSH {{order.order_totals}}</p>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xl uppercase text-gray-500">order notes</p>
+                    <div class="bg-gray-100 rounded-md mt-2">
+                        <div class="p-5 text-sm text-gray-500">
+                            <p>{{order.notes}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 flex flex-col" style="text-align: center;">
+                    <p>Thank you for using ClinicSync</p>
+                    <p class="mt-1 text-xs text-gray-400">Generated: {% now
+                        "jS F Y H:i" %}</p>
+                </div>
+            </main>
+        </body>
+    </html>

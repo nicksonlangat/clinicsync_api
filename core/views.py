@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 
@@ -10,6 +11,8 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from shared.pdf import Pdf
+
 from .models import Category, Clinic, Order, OrderItem, Product, Vendor
 from .permissions import IsOwnerPermission
 from .serializers import (
@@ -20,6 +23,9 @@ from .serializers import (
     ProductSerializer,
     VendorSerializer,
 )
+from .utils import send_order_email_to_vendor
+
+logger = logging.getLogger(__name__)
 
 
 class ClinicApi(viewsets.ModelViewSet):
@@ -47,6 +53,11 @@ class OrderApi(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsOwnerPermission]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"request": self.request})
+        return context
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -277,3 +288,66 @@ class OrderItemApi(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     permission_classes = [IsOwnerPermission]
+
+
+class TestEmailApi(APIView):
+    def get(self, request, format=None):
+        order = Order.objects.first()
+        email_sent = send_order_email_to_vendor(order, request)
+
+        return Response({"sent": email_sent})
+
+
+class TestPdfApi(APIView):
+    def get(self, request, format=None):
+        order = Order.objects.first()
+        items = order.items.all()
+        clinic = order.created_by.clinics.all()[0]
+
+        selected_template = "order"
+        return (
+            Pdf()
+            .generate_pdf(
+                request,
+                selected_template,
+                {"order": order, "items": items, "clinic": clinic},
+            )
+            .to_response(disposition="inline")
+        )
+
+
+class ChangeOrderStatusApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        order_id = request.data.get("order_id")
+        new_status = request.data.get("status")
+        order = Order.objects.get(id=order_id)
+
+        if new_status and new_status in [
+            Order.Status.COMPLETE,
+            Order.Status.PENDING,
+            Order.Status.CANCELLED,
+        ]:
+            order.status = new_status
+            order.save()
+            return Response({"status": "status updated"}, status=status.HTTP_200_OK)
+        return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SendOrderEmailApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        order_id = request.data.get("order_id")
+        order = Order.objects.get(id=order_id)
+
+        email_sent = send_order_email_to_vendor(order, request)
+        if email_sent:
+            logger.info(f"The email has been sent for {order.order_number}")
+            order.email_sent = True
+            order.save()
+            return Response({"status": "email sent"}, status=status.HTTP_200_OK)
+        return Response(
+            {"error": "Error sending email"}, status=status.HTTP_400_BAD_REQUEST
+        )
