@@ -10,7 +10,7 @@ router.register(r"products", views.ProductApi, basename="products")
 router.register(r"categories", views.CategoryApi, basename="categories")
 router.register(r"orders", views.OrderApi, basename="orders")
 router.register(r"orderitems", views.OrderItemApi, basename="orderitems")
-
+router.register(r"staff", views.StaffApi, basename="staff")
 
 urlpatterns = [
     path("import/products", views.ImportProductsApi.as_view(), name="import-products"),

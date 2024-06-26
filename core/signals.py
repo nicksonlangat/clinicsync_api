@@ -40,15 +40,15 @@ def mark_order_items_received(sender, instance, **kwargs):
         # Enable signal after performing the operation
         enable_signals()
 
-    if (
-        instance.status == Order.Status.PENDING
-        or instance.status == Order.Status.CANCELLED
-    ):
-        # Disable signal to prevent recursion
-        disable_signals()
-        order_items = instance.items.all()
-        for order_item in order_items:
-            order_item.status = OrderItem.Status.PENDING
-            order_item.save()
-        # Enable signal after performing the operation
-        enable_signals()
+    # if (
+    #     instance.status == Order.Status.PENDING
+    #     or instance.status == Order.Status.CANCELLED
+    # ):
+    #     # Disable signal to prevent recursion
+    #     disable_signals()
+    #     order_items = instance.items.all()
+    #     for order_item in order_items:
+    #         order_item.status = OrderItem.Status.PENDING
+    #         order_item.save()
+    #     # Enable signal after performing the operation
+    #     enable_signals()

@@ -1,5 +1,7 @@
 import logging
 
+from django.utils import timezone
+
 from shared.email import TemplateEmail
 from shared.pdf import Pdf
 
@@ -13,7 +15,14 @@ def generate_order_pdf(order, request):
     selected_template = "order"
 
     pdf = Pdf().generate_pdf(
-        request, selected_template, {"order": order, "items": items, "clinic": clinic}
+        request,
+        selected_template,
+        {
+            "order": order,
+            "items": items,
+            "clinic": clinic,
+            "now": timezone.now(),
+        },
     )
     return pdf.get()
 

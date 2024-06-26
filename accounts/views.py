@@ -1,6 +1,7 @@
 import datetime
 from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from rest_framework import exceptions, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,9 +9,16 @@ from rest_framework.views import APIView
 from core.serializers import ClinicSerializer
 from shared.email import TemplateEmail
 
-from .models import PasswordResetToken, Plan, User
-from .serializers import PlanSerializer, UserRegisterSerializer, UserSerializer
+from .models import PasswordResetToken, Plan
+from .serializers import (
+    PlanSerializer,
+    StaffRegisterSerializer,
+    UserRegisterSerializer,
+    UserSerializer,
+)
 from .utils import get_tokens_for_user
+
+User = get_user_model()
 
 
 class UserRegisterApi(APIView):
@@ -226,3 +234,54 @@ class UserSetNewPasswordApi(APIView):
             {"success": True, "message": "Password reset successfully"},
             status=status.HTTP_200_OK,
         )
+
+
+class StaffRegisterApi(APIView):
+    """
+    View to register new staff users
+    * Requires authentication.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = StaffRegisterSerializer
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        registered_user = serializer.save()
+        template = TemplateEmail(
+            to=[registered_user.email],
+            subject="You are invited",
+            template="invitation",
+            context={
+                "new_user": registered_user,
+                "user": request.user,
+                "password": request.data["password"],
+            },
+            order_pdf=None,
+        )
+        template.send()
+        return Response(
+            UserSerializer(registered_user).data, status=status.HTTP_201_CREATED
+        )
+
+
+class UpdateUserView(APIView):
+    def get_object(self, uid):
+        try:
+            return User.objects.get(id=uid)
+        except User.DoesNotExist:
+            return None
+
+    def put(self, request, uid, format=None):
+        user = self.get_object(uid)
+        if not user:
+            return Response(
+                {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = StaffRegisterSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

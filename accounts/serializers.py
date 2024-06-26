@@ -64,3 +64,30 @@ class PlanSerializer(serializers.ModelSerializer):
 
     def get_remaining_days(self, obj):
         return obj.remaining_days
+
+
+class StaffRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = fields = [
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "role",
+            "phone_number",
+            "image",
+        ]
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
+
+    def create(self, validated_data):
+        user = get_user_model()(**validated_data)
+        user.set_password(validated_data["password"])
+        user.is_active = True
+        user.email_confirmed = True
+        user.save()
+        return user

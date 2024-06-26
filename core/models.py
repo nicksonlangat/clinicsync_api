@@ -23,8 +23,32 @@ class Clinic(BaseModel):
     logo = models.ImageField(upload_to="clinic-logos", null=True, blank=True)
 
 
-class ClinicBranch(BaseModel):
-    pass
+class Staff(BaseModel):
+    class StaffType(models.TextChoices):
+        DOCTOR = "Doctor"
+        NURSE = "Nurse"
+        GENERAL = "General"
+
+    class JobType(models.TextChoices):
+        PART = "Part Time"
+        FULL = "Full Time"
+
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_staff", null=True, blank=True
+    )
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="staff")
+    job_title = models.CharField(max_length=250, blank=True, null=True)
+    staff_type = models.CharField(
+        max_length=255, choices=StaffType.choices, default=StaffType.GENERAL
+    )
+    job_type = models.CharField(
+        max_length=255, choices=JobType.choices, default=JobType.FULL
+    )
+    working_days = models.JSONField()
+
+    def __str__(self) -> str:
+        return str(self.job_title)
 
 
 class Vendor(BaseModel):
