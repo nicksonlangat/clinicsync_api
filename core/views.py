@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 
 from shared.pdf import Pdf
 
-from .models import Category, Clinic, Order, OrderItem, Product, Vendor
+from .models import Category, Clinic, Order, OrderItem, Product, Staff, Vendor
 from .permissions import IsOwnerPermission
 from .serializers import (
     CategorySerializer,
@@ -21,11 +21,24 @@ from .serializers import (
     OrderItemSerializer,
     OrderSerializer,
     ProductSerializer,
+    StaffSerializer,
     VendorSerializer,
 )
 from .utils import send_order_email_to_vendor
 
 logger = logging.getLogger(__name__)
+
+
+class StaffApi(viewsets.ModelViewSet):
+    queryset = Staff.objects.all()
+    serializer_class = StaffSerializer
+    permission_classes = [IsOwnerPermission]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    def get_queryset(self):
+        return Staff.objects.filter(created_by=self.request.user)
 
 
 class ClinicApi(viewsets.ModelViewSet):
