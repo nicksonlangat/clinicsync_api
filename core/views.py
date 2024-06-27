@@ -29,18 +29,6 @@ from .utils import send_order_email_to_vendor
 logger = logging.getLogger(__name__)
 
 
-class StaffApi(viewsets.ModelViewSet):
-    queryset = Staff.objects.all()
-    serializer_class = StaffSerializer
-    permission_classes = [IsOwnerPermission]
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-    def get_queryset(self):
-        return Staff.objects.filter(created_by=self.request.user)
-
-
 class ClinicApi(viewsets.ModelViewSet):
     queryset = Clinic.objects.all()
     serializer_class = ClinicSerializer
@@ -363,4 +351,47 @@ class SendOrderEmailApi(APIView):
             return Response({"status": "email sent"}, status=status.HTTP_200_OK)
         return Response(
             {"error": "Error sending email"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class StaffApi(viewsets.ModelViewSet):
+    queryset = Staff.objects.all()
+    serializer_class = StaffSerializer
+    permission_classes = [IsOwnerPermission]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    def get_queryset(self):
+        qs = Staff.objects.filter(created_by=self.request.user)
+        staff_type = self.request.query_params.get("staff_type", None)
+        job_type = self.request.query_params.get("job_type", None)
+        job_type = self.request.query_params.get("job_type", None)
+        job_title = self.request.query_params.get("job_title", None)
+        if staff_type is not None and staff_type != "":
+            qs = qs.filter(staff_type=staff_type)
+        if job_type is not None and job_type != "":
+            qs = qs.filter(Q(job_type=job_type))
+        if job_title is not None and job_title != "":
+            qs = qs.filter(job_title=job_title)
+
+        return qs
+
+
+class ClinicStaffStatsApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        qs = Staff.objects.filter(created_by=self.request.user)
+        doctor_count = qs.filter(staff_type="Doctor").count()
+        nurse_count = qs.filter(staff_type="Nurse").count()
+        general_count = qs.filter(staff_type="General").count()
+
+        return Response(
+            {
+                "doctor_count": doctor_count,
+                "nurse_count": nurse_count,
+                "general_count": general_count,
+            },
+            status=status.HTTP_200_OK,
         )

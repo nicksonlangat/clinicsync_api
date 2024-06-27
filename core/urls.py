@@ -24,4 +24,5 @@ urlpatterns = [
     path("send/email", views.SendOrderEmailApi.as_view(), name="send-email"),
     path("test/email", views.TestEmailApi.as_view(), name="email-test"),
     path("test/pdf", views.TestPdfApi.as_view(), name="email-pdf"),
+    path("staff/stats", views.ClinicStaffStatsApi.as_view(), name="staff-stats"),
 ] + router.urls
