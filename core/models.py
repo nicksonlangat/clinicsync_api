@@ -173,3 +173,51 @@ class OrderItem(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.order.order_number} - {self.product.name} - {self.total}"
+
+
+class Patient(BaseModel):
+    class BloodGroup(models.TextChoices):
+        A = "A"
+        B = "B"
+        AB = "AB"
+        o = "O"
+
+    class HIVStatus(models.TextChoices):
+        POSITIVE = "Positive"
+        NEGATIVE = "Negative"
+
+    class Gender(models.TextChoices):
+        MALE = "Male"
+        FEMALE = "Female"
+
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="patients", null=True, blank=True
+    )
+    clinic = models.ForeignKey(
+        Clinic, on_delete=models.CASCADE, related_name="clinic_patients"
+    )
+    first_name = models.CharField(max_length=250, null=True, blank=True)
+    last_name = models.CharField(max_length=250, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=250, null=True, blank=True)
+    address = models.CharField(max_length=250, null=True, blank=True)
+    gender = models.CharField(
+        max_length=250, choices=Gender.choices, default=Gender.MALE
+    )
+    image = models.ImageField(upload_to="patients", null=True, blank=True)
+    age = models.IntegerField()
+    hiv_status = models.CharField(
+        max_length=250, choices=HIVStatus.choices, default=HIVStatus.NEGATIVE
+    )
+    blood_group = models.CharField(
+        max_length=250, choices=BloodGroup.choices, default=BloodGroup.AB
+    )
+    blood_pressure = models.CharField(max_length=250, null=True, blank=True)
+    is_allergic = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    allergic_description = models.CharField(max_length=250, null=True, blank=True)
+    medical_condition = models.TextField(null=True, blank=True)
+    last_visit = models.DateField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.first_name} - {self.last_name}"

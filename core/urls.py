@@ -11,6 +11,7 @@ router.register(r"categories", views.CategoryApi, basename="categories")
 router.register(r"orders", views.OrderApi, basename="orders")
 router.register(r"orderitems", views.OrderItemApi, basename="orderitems")
 router.register(r"staff", views.StaffApi, basename="staff")
+router.register(r"patients", views.PatientApi, basename="patients")
 
 urlpatterns = [
     path("import/products", views.ImportProductsApi.as_view(), name="import-products"),
@@ -25,4 +26,5 @@ urlpatterns = [
     path("test/email", views.TestEmailApi.as_view(), name="email-test"),
     path("test/pdf", views.TestPdfApi.as_view(), name="email-pdf"),
     path("staff/stats", views.ClinicStaffStatsApi.as_view(), name="staff-stats"),
+    path("patient/stats", views.ClinicPatientStatsApi.as_view(), name="patient-stats"),
 ] + router.urls

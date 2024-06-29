@@ -13,13 +13,14 @@ from rest_framework.views import APIView
 
 from shared.pdf import Pdf
 
-from .models import Category, Clinic, Order, OrderItem, Product, Staff, Vendor
+from .models import Category, Clinic, Order, OrderItem, Patient, Product, Staff, Vendor
 from .permissions import IsOwnerPermission
 from .serializers import (
     CategorySerializer,
     ClinicSerializer,
     OrderItemSerializer,
     OrderSerializer,
+    PatientSerializer,
     ProductSerializer,
     StaffSerializer,
     VendorSerializer,
@@ -392,6 +393,52 @@ class ClinicStaffStatsApi(APIView):
                 "doctor_count": doctor_count,
                 "nurse_count": nurse_count,
                 "general_count": general_count,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class PatientApi(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    def get_queryset(self):
+        clinic = Clinic.objects.filter(created_by=self.request.user).first()
+        qs = Patient.objects.filter(clinic=clinic)
+        hiv_status = self.request.query_params.get("hiv_status", None)
+        blood_group = self.request.query_params.get("blood_group", None)
+        is_active = self.request.query_params.get("is_active")
+        gender = self.request.query_params.get("gender", None)
+
+        if is_active is not None and is_active != "":
+            is_active = is_active.lower() == "true"
+            qs = qs.filter(is_active=is_active)
+        if hiv_status is not None and hiv_status != "":
+            qs = qs.filter(Q(hiv_status=hiv_status))
+        if blood_group is not None and blood_group != "":
+            qs = qs.filter(blood_group=blood_group)
+        if gender is not None and gender != "":
+            qs = qs.filter(gender=gender)
+
+        return qs
+
+
+class ClinicPatientStatsApi(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        clinic = Clinic.objects.filter(created_by=self.request.user).first()
+        qs = Patient.objects.filter(clinic=clinic)
+
+        return Response(
+            {
+                "active_patient_count": qs.filter(is_active=True).count(),
+                "inactive_patient_count": qs.filter(is_active=False).count(),
+                "total_count": qs.count(),
             },
             status=status.HTTP_200_OK,
         )
