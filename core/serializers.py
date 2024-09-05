@@ -3,7 +3,17 @@ from rest_framework import serializers
 
 from accounts.serializers import UserSerializer
 
-from .models import Category, Clinic, Order, OrderItem, Patient, Product, Staff, Vendor
+from .models import (
+    Category,
+    Clinic,
+    Order,
+    OrderItem,
+    Patient,
+    Product,
+    Reservation,
+    Staff,
+    Vendor,
+)
 from .utils import send_order_email_to_vendor
 
 
@@ -182,4 +192,17 @@ class PatientSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation["created_by"] = UserSerializer(instance.created_by).data
         representation["clinic"] = ClinicSerializer(instance.clinic).data
+        return representation
+
+
+class ReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["created_by"] = UserSerializer(instance.created_by).data
+        representation["doctor"] = StaffSerializer(instance.doctor).data
+        representation["patient"] = PatientSerializer(instance.patient).data
         return representation
