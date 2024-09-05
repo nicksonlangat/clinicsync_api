@@ -1,3 +1,5 @@
+import calendar
+import datetime
 import logging
 import os
 import random
@@ -13,7 +15,17 @@ from rest_framework.views import APIView
 
 from shared.pdf import Pdf
 
-from .models import Category, Clinic, Order, OrderItem, Patient, Product, Staff, Vendor
+from .models import (
+    Category,
+    Clinic,
+    Order,
+    OrderItem,
+    Patient,
+    Product,
+    Reservation,
+    Staff,
+    Vendor,
+)
 from .permissions import IsOwnerPermission
 from .serializers import (
     CategorySerializer,
@@ -22,6 +34,7 @@ from .serializers import (
     OrderSerializer,
     PatientSerializer,
     ProductSerializer,
+    ReservationSerializer,
     StaffSerializer,
     VendorSerializer,
 )
@@ -442,3 +455,44 @@ class ClinicPatientStatsApi(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class ReservationApi(viewsets.ModelViewSet):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class WeeklyAppointmentApi(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get_current_week_dates(self):
+        today = datetime.date.today()
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        current_week_dates = [
+            start_of_week + datetime.timedelta(days=i) for i in range(5)
+        ]
+        return current_week_dates
+
+    def get(self, request):
+        dates = self.get_current_week_dates()
+        # Filter reservations for each date
+        reservations_by_date = []
+        for date in dates:
+            reservations = Reservation.objects.filter(reservation_date=date).order_by(
+                "start_time"
+            )
+            serializer = ReservationSerializer(reservations, many=True)
+            reservations_by_date.append(
+                {
+                    "date": date.day,  # date.strftime("%Y-%m-%d"),
+                    "day": calendar.day_name[date.weekday()][:3],
+                    "today": datetime.date.today().day == date.day,
+                    "appointments": serializer.data,
+                }
+            )
+
+        return Response({"results": reservations_by_date})

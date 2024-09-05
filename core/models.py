@@ -221,3 +221,89 @@ class Patient(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.first_name} - {self.last_name}"
+
+
+class Reservation(BaseModel):
+    class ReservationType(models.TextChoices):
+        GENERAL = "General"
+        ACUTE = "Acute"
+        XRAY = "X-Ray"
+        CTSCAN = "CT Scan"
+        CHECKUP = "Check Up"
+        CHRONIC = "Chronic"
+
+    class Status(models.TextChoices):
+        PENDING = "Pending"
+        COMPLETE = "Complete"
+        CANCELLED = "Cancelled"
+
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True
+    )
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE, related_name="patient_reservations"
+    )
+    doctor = models.ForeignKey(
+        Staff, on_delete=models.CASCADE, related_name="doctor_reservations"
+    )
+    reservation_number = models.CharField(unique=True, null=True, blank=True)
+    reservation_date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    status = models.CharField(
+        max_length=255, choices=Status.choices, default=Status.PENDING
+    )
+    reservation_type = models.CharField(
+        max_length=255, choices=ReservationType.choices, default=ReservationType.GENERAL
+    )
+    description = models.TextField(null=True, blank=True)
+    treatment = models.TextField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.reservation_number or self.reservation_number == "":
+            self.reservation_number = self.generate_unique_reservation_number()
+        super().save(*args, **kwargs)
+
+    def generate_unique_reservation_number(self):
+        prefix = "RSV"
+        suffix = "".join(random.choices(string.digits, k=5))
+        return f"{prefix}-{suffix}"
+
+    def __str__(self) -> str:
+        return f"{self.reservation_number} - {self.patient.first_name} - {self.reservation_date} - {self.start_time} {self.end_time}"
+
+
+class Bill(BaseModel):
+    class Status(models.TextChoices):
+        PENDING = "Pending"
+        COMPLETE = "Complete"
+        CANCELLED = "Cancelled"
+
+    class PaymentMethod(models.TextChoices):
+        CASH = "Cash"
+        CARD = "Card"
+        MOMO = "Momo"
+
+    reservation = models.ForeignKey(
+        Reservation, on_delete=models.CASCADE, related_name="bills"
+    )
+
+    bill_number = models.CharField(unique=True, null=True, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(
+        max_length=255, choices=Status.choices, default=Status.PENDING
+    )
+    description = models.TextField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.bill_number or self.bill_number == "":
+            self.bil = self.generate_unique_bill_number()
+        super().save(*args, **kwargs)
+
+    def generate_unique_bill_number(self):
+        prefix = "BLL"
+        suffix = "".join(random.choices(string.digits, k=5))
+        return f"{prefix}-{suffix}"
+
+    def __str__(self) -> str:
+        return f"{self.reservation.reservation_number} - {self.bill_number}"
