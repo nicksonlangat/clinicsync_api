@@ -55,6 +55,9 @@ jobs:
       # Pip install project dependencies
       - name: Install dependencies
         run: |
+          mkdir django_logs
+          touch django_logs/error.log
+          touch django_logs/info.log
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 

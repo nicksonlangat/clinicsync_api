@@ -223,13 +223,15 @@ if DEBUG:
     EMAIL_HOST = "127.0.0.1"
     EMAIL_PORT = 1025
 else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    SENDGRID_API_KEY = env("SENDGRID_API_KEY")
-    EMAIL_HOST = env("EMAIL_HOST")
-    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-    EMAIL_PORT = env("EMAIL_PORT")
-    EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    # use only in prod
+    # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    # SENDGRID_API_KEY = env("SENDGRID_API_KEY")
+    # EMAIL_HOST = env("EMAIL_HOST")
+    # EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    # EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+    # EMAIL_PORT = env("EMAIL_PORT")
+    # EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 
 DEFAULT_FROM_EMAIL = "team@clinicsync.co"
 # end email configs
