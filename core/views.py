@@ -107,7 +107,7 @@ class ProductApi(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
     def get_queryset(self):
-        qs = Product.objects.filter(created_by=self.request.user)
+        qs = Product.objects.filter(created_by=self.request.user)[:20]
         status = self.request.query_params.get("status", None)
         stock_number = self.request.query_params.get("stock_number", None)
         category = self.request.query_params.get("category", None)
